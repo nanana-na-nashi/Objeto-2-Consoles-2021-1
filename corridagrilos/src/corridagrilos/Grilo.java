@@ -17,13 +17,36 @@ public class Grilo extends Thread {
         semaphore = _semaphore;
     }
     public void run(){
-        System.out.println("O grilo "+numero+" comeï¿½ou a pular!!");
+        System.out.println("O grilo "+numero+" comecou a pular!!");
         while(distancia<Corrida.distancia) {
-            int pulo = random.nextInt(Corrida.maximoPulo);
-            distancia += pulo;
-            pulos++;
-            System.out.println("O grilo "+numero+" pulou "+ pulo+ " cm! Ja percorreu "+ distancia +" cm");
+            try {
+                semaphore.acquire();
+                int pulo = random.nextInt(Corrida.maximoPulo);
+                distancia += pulo;
+                pulos++;
+                System.out.println("O grilo "+numero+" pulou "+ pulo+ " cm! Ja percorreu "+ distancia +" cm");
+            }
+            catch(InterruptedException e){
+                e.printStackTrace();
+            }
+            finally {
+                semaphore.release();
+            }
         }
-        System.out.println("O grilo "+numero+" pulou Chegou na linha de chegada com "+pulos +" pulos!");
+        if(Corrida.posicao == 1)
+            Corrida.vencedor = time;
+        System.out.println("O grilo "+numero+" foi o "+(Corrida.posicao++)+"º a chegar com "+pulos+" pulos!");
+
+    }
+
+    public int GetPulos() {
+        return pulos;
+    }
+
+    public int GetDist() {
+        return distancia;
+    }
+    public int GetTime() {
+        return time;
     }
 }
